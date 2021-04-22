@@ -132,6 +132,81 @@ const App = () => {
     }
   },[evalCode,editorText0,editorText1,editorText2,editorText3,path])
 
+  useEffect(()=>{
+    setErrorHandler0('')
+    setErrorHandler1('')
+    setErrorHandler2('')
+    setErrorHandler3('')
+    var t0 = activeTA === 0 ? `${editorText0}.out(o0)` : `${sharedBuf[0]}.out(o0)`
+    var t1 = activeTA === 1 ? `${editorText1}.out(o2)` : `${sharedBuf[1]}.out(o2)`
+    var t2 = activeTA === 2 ? `${editorText2}.out(o1)` : `${sharedBuf[2]}.out(o1)`
+    var t3 = activeTA === 3 ? `${editorText3}.out(o3)` : `${sharedBuf[3]}.out(o3)`
+    var tt0 = editorText0 !== '.out(o0)' ? t0 : 'solid(1,1,1).out(o0)'
+    var tt1 = editorText1 !== '.out(o2)' ? t1 : 'solid(1,1,1).out(o2)'
+    var tt2 = editorText2 !== '.out(o1)' ? t2 : 'solid(1,1,1).out(o1)'
+    var tt3 = editorText3 !== '.out(o3)' ? t3 : 'solid(1,1,1).out(o3)'
+
+    try{
+      hydra.eval(tt0)
+    } catch (err){
+      setErrorHandler0(err)
+    }
+    try{
+      hydra.eval(tt1)
+    } catch (err){
+      setErrorHandler1(err)
+    }
+    try {
+      hydra.eval(tt2)
+    } catch (err){
+      setErrorHandler2(err)
+    }
+    try {
+      hydra.eval(tt3)
+    } catch (err){
+      setErrorHandler3(err)
+    }
+  },[sharedBuf[0],sharedBuf[1],sharedBuf[2],sharedBuf[3]])
+
+  useEffect(()=>{
+    if(activeTA == 4){
+      db.ref('app/elmnts/'+path+'/').on('value',(snapshot) => {
+        let sn = snapshot.val()
+        if(sn !== null){
+          setCoderNames([sn.names0,sn.names1,sn.names2,sn.names3])
+          setSharedBuf([sn.text0,sn.text1,sn.text2,sn.text3])
+        }
+      })
+      console.log(sharedBuf)
+
+      var t0 = `${sharedBuf[0]}.out(o0)`
+      var t1 = `${sharedBuf[1]}.out(o2)`
+      var t2 = `${sharedBuf[2]}.out(o1)`
+      var t3 = `${sharedBuf[3]}.out(o3)`
+
+      try{
+        hydra.eval(t0)
+      } catch (err){
+        setErrorHandler0(err)
+      }
+      try{
+        hydra.eval(t1)
+      } catch (err){
+        setErrorHandler1(err)
+      }
+      try {
+        hydra.eval(t2)
+      } catch (err){
+        setErrorHandler2(err)
+      }
+      try {
+        hydra.eval(t3)
+      } catch (err){
+        setErrorHandler3(err)
+      }
+    }
+  },[activeTA])
+
   const checkCode0 = (e) => {
     setEditorText0(e.target.value)
   }
@@ -177,67 +252,108 @@ const App = () => {
               <Row>
                 <Col>
                   <label htmlFor="name1" className="label-name">name</label>
-                  {activeTA === 0
-                    ? <>
-                      <input id="name1" onChange={(e) => setCoderName0(e.target.value)} className="input-name"/>
-                      <textarea className="textarea-main-style" onChange={checkCode0}></textarea>
-                      </>
-                    : <>
+                  {activeTA === 0 &&
+                    <>
+                      <input id="name1" onChange={(e) => setCoderName0(e.target.value)} className="input-name blue"/>
+                      <textarea className="textarea-main-style blue" onChange={checkCode0}></textarea>
+                    </>
+                  }
+                  {activeTA !== 0 && activeTA !== 4 &&
+                     <>
                       <input id="name1" className="input-name focus-false" value={coderNames[0]} style={{outline:'none'}} readOnly/>
                       <textarea className="textarea-main-style focus-false" value={sharedBuf[0]} style={{outline:'none'}} readOnly></textarea>
                       </>
                   }
-                  <input className="input-name-status" value={`${errorHandler0}`} readOnly/>
+                  {activeTA !== 4
+                    ? <input className="input-name-status" value={`${errorHandler0}`} readOnly/>
+                    :
+                    <>
+                    <input id="name1" className="input-name focus-false blue" value={coderNames[0]} style={{outline:'none'}} readOnly/>
+                    <textarea className="textarea-main-style focus-false blue" value={sharedBuf[0]} style={{outline:'none'}} readOnly></textarea>
+                    </>
+                  }
                 </Col>
                 <Col>
                   <label htmlFor="name2" className="label-name">name</label>
-                  {activeTA === 1
-                    ? <>
-                      <input id="name2" onChange={(e) => setCoderName1(e.target.value)} className="input-name"/>
-                      <textarea className="textarea-main-style" onChange={checkCode1}></textarea>
-                      </>
-                    : <>
+                  {activeTA === 1 &&
+                    <>
+                      <input id="name2" onChange={(e) => setCoderName1(e.target.value)} className="input-name yellow"/>
+                      <textarea className="textarea-main-style yellow" onChange={checkCode1}></textarea>
+                    </>
+                  }
+                  {activeTA !== 1 && activeTA !== 4 &&
+                    <>
                       <input id="name2" className="input-name focus-false" value={coderNames[1]} style={{outline:'none'}} readOnly/>
                       <textarea className="textarea-main-style focus-false" value={sharedBuf[1]} style={{outline:'none'}} readOnly></textarea>
-                      </>
+                    </>
                   }
-                  <input className="input-name-status" value={`${errorHandler1}`} readOnly/>
+                  {activeTA !== 4
+                    ? <input className="input-name-status" value={`${errorHandler1}`} readOnly/>
+                    :
+                    <>
+                    <input id="name2" className="input-name focus-false yellow" value={coderNames[1]} style={{outline:'none'}} readOnly/>
+                    <textarea className="textarea-main-style focus-false yellow" value={sharedBuf[1]} style={{outline:'none'}} readOnly></textarea>
+                    </>
+                  }
                 </Col>
               </Row>
               <Row>
                 <Col>
                   <label htmlFor="name3" className="label-name">name</label>
-                  {activeTA === 2
-                    ? <>
-                      <input id="name3" onChange={(e) => setCoderName2(e.target.value)} className="input-name"/>
-                      <textarea className="textarea-main-style" onChange={checkCode2}></textarea>
-                      </>
-                    : <>
+                  {activeTA === 2 &&
+                    <>
+                      <input id="name3" onChange={(e) => setCoderName2(e.target.value)} className="input-name red"/>
+                      <textarea className="textarea-main-style red" onChange={checkCode2}></textarea>
+                    </>
+                  }
+                  {activeTA !== 2 && activeTA !== 4 &&
+                    <>
                       <input id="name3" className="input-name focus-false" value={coderNames[2]} style={{outline:'none'}} readOnly/>
                       <textarea className="textarea-main-style focus-false" value={sharedBuf[2]} style={{outline:'none'}} readOnly></textarea>
-                      </>
+                    </>
                   }
-                  <input className="input-name-status" value={`${errorHandler2}`} readOnly/>
+                  {activeTA !== 4
+                    ? <input className="input-name-status" value={`${errorHandler2}`} readOnly/>
+                    :
+                    <>
+                    <input id="name13" className="input-name focus-false red" value={coderNames[2]} style={{outline:'none'}} readOnly/>
+                    <textarea className="textarea-main-style focus-false red" value={sharedBuf[2]} style={{outline:'none'}} readOnly></textarea>
+                    </>
+                  }
                 </Col>
                 <Col>
                   <label htmlFor="name4" className="label-name">name</label>
-                  {activeTA === 3
-                    ? <>
-                      <input id="name4" onChange={(e) => setCoderName3(e.target.value)} className="input-name"/>
-                      <textarea className="textarea-main-style" onChange={checkCode3}></textarea>
-                      </>
-                    : <>
+                  {activeTA === 3 &&
+                    <>
+                      <input id="name4" onChange={(e) => setCoderName3(e.target.value)} className="input-name green"/>
+                      <textarea className="textarea-main-style green" onChange={checkCode3}></textarea>
+                    </>
+                  }
+                  {activeTA !== 3 && activeTA !== 4 &&
+                    <>
                       <input id="name4" className="input-name focus-false" value={coderNames[3]} style={{outline:'none'}} readOnly/>
                       <textarea className="textarea-main-style focus-false" value={sharedBuf[3]} style={{outline:'none'}} readOnly></textarea>
-                      </>
+                    </>
                   }
-                  <input className="input-name-status" value={`${errorHandler3}`} readOnly/>
+                  {activeTA !== 4
+                    ? <input className="input-name-status" value={`${errorHandler3}`} readOnly/>
+                    :
+                    <>
+                    <input id="name13" className="input-name focus-false green" value={coderNames[3]} style={{outline:'none'}} readOnly/>
+                    <textarea className="textarea-main-style focus-false green" value={sharedBuf[3]} style={{outline:'none'}} readOnly></textarea>
+                    </>
+                  }
                 </Col>
               </Row>
             </Card.Body>
           <Card.Footer>
+          {activeTA !== 4 &&
+            <>
             {status}
             <input style={{marginLeft:'2rem',backgroundColor:'rgba(255,255,255,0.2)',borderRadius:'4px'}} placeholder="main commands here" type="text"/>
+            </>
+          }
+
           </Card.Footer>
         </Card>
       </Container>
@@ -255,6 +371,9 @@ const Claim = (props) => {
   const db = useDatabase();
 
   useEffect(()=>{
+    if(ensemble.length === 0 && password.length === 0){
+      setDone(false)
+    }
     if(ensemble.length !== 0 && password.length !== 0){
       props.setPath(cypher(ensemble+password,2),setDone(true))
     }
@@ -266,15 +385,15 @@ const Claim = (props) => {
 
   return(
     <Container style={{width:'30%', marginTop:'14vh', zIndex:'1000',position:'relative'}}>
-      <Card className="text-center">
+      <Card className="text-center" style={{width:'22rem'}}>
         <Card.Header style={{opacity:'0.2'}} >hydra by Olivia Jack - elmnts by Celeste Betancur </Card.Header>
         <Card.Title>elmnts</Card.Title>
         <Container>
-          <label>ensemble</label>
+          <label>ensamble</label>
           <input style={{margin:'1rem'}} onChange={(e) => setEnsemble(e.target.value)} require/>
         </Container>
         <Container>
-          <label>password</label>
+          <label>contraseña</label>
           <input style={{margin:'1rem'}} onChange={(e) => setPassword(e.target.value)}  require/>
         </Container>
         {done &&
@@ -343,6 +462,11 @@ const Claim = (props) => {
             </Row>
             </>
           }
+          <Row>
+            <Container>
+              <Button style={{margin:'1rem'}} variant="dark" className="button-claim" onClick={()=> props.setActiveTA(4)}>Visitar Ensamble</Button>
+            </Container>
+          </Row>
           </>
         }
       </Card>

@@ -87,3 +87,16 @@ textarea:focus{
   color: #bbb;
   boder: none;
 }
+
+.blue{
+  background-color: rgba(100,100,255,0.15);
+}
+.yellow{
+  background-color: rgba(255,255,0,0.15);
+}
+.red{
+  background-color: rgba(255,0,0,0.15);
+}
+.green{
+  background-color: rgba(0,255,0,0.15);
+}
