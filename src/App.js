@@ -3,7 +3,10 @@ import EventSend from './eventListener'
 import Hydra from 'hydra-synth'
 import {useDatabase} from 'reactfire'
 import 'firebase/database'
+import 'firebase/app'
 import { Container, Card, Row, Col, Button} from 'react-bootstrap'
+
+import Agua from './Agua'
 
 import {cypher} from './cypher'
 
@@ -12,10 +15,6 @@ import './style.css'
 const html = require('nanohtml')
 let canvasIn = true;
 let hydra;
-
-export const mainEval = React.createContext(
-  false
-);
 
 const App = () => {
   const [status, setStatus] = useState('>>> waiting to start')
@@ -37,6 +36,7 @@ const App = () => {
   const [sharedBuf, setSharedBuf] = useState([])
   const [path, setPath] = useState('')
   const [usersTaken, setUsersTaken] = useState([])
+  const [box1Lang, setBox1Lang] = useState(true)
 
   const db = useDatabase();
 
@@ -95,6 +95,7 @@ const App = () => {
     }
 
     if(evalCode){
+      setStatus('disfruta')
       setErrorHandler0('')
       setErrorHandler1('')
       setErrorHandler2('')
@@ -108,11 +109,14 @@ const App = () => {
       var tt2 = editorText2 !== '.out(o1)' ? t2 : 'solid(1,1,1).out(o1)'
       var tt3 = editorText3 !== '.out(o3)' ? t3 : 'solid(1,1,1).out(o3)'
 
-      try{
-        hydra.eval(tt0)
-      } catch (err){
-        setErrorHandler0(err)
+      if(box1Lang){
+        try{
+          hydra.eval(tt0)
+        } catch (err){
+          setErrorHandler0(err)
+        }
       }
+
       try{
         hydra.eval(tt1)
       } catch (err){
@@ -133,43 +137,7 @@ const App = () => {
   },[evalCode,editorText0,editorText1,editorText2,editorText3,path])
 
   useEffect(()=>{
-    setErrorHandler0('')
-    setErrorHandler1('')
-    setErrorHandler2('')
-    setErrorHandler3('')
-    var t0 = activeTA === 0 ? `${editorText0}.out(o0)` : `${sharedBuf[0]}.out(o0)`
-    var t1 = activeTA === 1 ? `${editorText1}.out(o2)` : `${sharedBuf[1]}.out(o2)`
-    var t2 = activeTA === 2 ? `${editorText2}.out(o1)` : `${sharedBuf[2]}.out(o1)`
-    var t3 = activeTA === 3 ? `${editorText3}.out(o3)` : `${sharedBuf[3]}.out(o3)`
-    var tt0 = editorText0 !== '.out(o0)' ? t0 : 'solid(1,1,1).out(o0)'
-    var tt1 = editorText1 !== '.out(o2)' ? t1 : 'solid(1,1,1).out(o2)'
-    var tt2 = editorText2 !== '.out(o1)' ? t2 : 'solid(1,1,1).out(o1)'
-    var tt3 = editorText3 !== '.out(o3)' ? t3 : 'solid(1,1,1).out(o3)'
-
-    try{
-      hydra.eval(tt0)
-    } catch (err){
-      setErrorHandler0(err)
-    }
-    try{
-      hydra.eval(tt1)
-    } catch (err){
-      setErrorHandler1(err)
-    }
-    try {
-      hydra.eval(tt2)
-    } catch (err){
-      setErrorHandler2(err)
-    }
-    try {
-      hydra.eval(tt3)
-    } catch (err){
-      setErrorHandler3(err)
-    }
-  },[sharedBuf[0],sharedBuf[1],sharedBuf[2],sharedBuf[3]])
-
-  useEffect(()=>{
-    if(activeTA == 4){
+    if(activeTA === 4){
       db.ref('app/elmnts/'+path+'/').on('value',(snapshot) => {
         let sn = snapshot.val()
         if(sn !== null){
@@ -177,35 +145,56 @@ const App = () => {
           setSharedBuf([sn.text0,sn.text1,sn.text2,sn.text3])
         }
       })
-      console.log(sharedBuf)
+    }
+  },[activeTA])
 
-      var t0 = `${sharedBuf[0]}.out(o0)`
-      var t1 = `${sharedBuf[1]}.out(o2)`
-      var t2 = `${sharedBuf[2]}.out(o1)`
-      var t3 = `${sharedBuf[3]}.out(o3)`
-
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      var t = `${sharedBuf[0]}.out(o0)`
       try{
-        hydra.eval(t0)
+        hydra.eval(t)
       } catch (err){
         setErrorHandler0(err)
       }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [sharedBuf[0]]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      var t = `${sharedBuf[1]}.out(o2)`
       try{
-        hydra.eval(t1)
+        hydra.eval(t)
       } catch (err){
-        setErrorHandler1(err)
+        setErrorHandler0(err)
       }
-      try {
-        hydra.eval(t2)
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [sharedBuf[1]]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      var t = `${sharedBuf[2]}.out(o1)`
+      try{
+        hydra.eval(t)
       } catch (err){
-        setErrorHandler2(err)
+        setErrorHandler0(err)
       }
-      try {
-        hydra.eval(t3)
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [sharedBuf[2]]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      var t = `${sharedBuf[3]}.out(o3)`
+      try{
+        hydra.eval(t)
       } catch (err){
-        setErrorHandler3(err)
+        setErrorHandler0(err)
       }
-    }
-  },[activeTA])
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [sharedBuf[3]]);
 
   const checkCode0 = (e) => {
     setEditorText0(e.target.value)
@@ -232,16 +221,30 @@ const App = () => {
     setCoder3(e)
   }
 
+  const errorHandler0Agua = val => {
+    setErrorHandler0(val)
+    if(val.length > 0){
+      setBox1Lang(false)
+    }
+  }
+
   return (
     <>
       {activeTA === -1 &&
+        <>
         <Claim
           setActiveTA={setActiveTA}
           setPath={setPath}
         />
+      </>
       }
       {activeTA !== -1 &&
       <Container fluid className="main-container">
+          <Agua
+            text={editorText0}
+            evalCode={evalCode}
+            errorHandler={errorHandler0Agua}
+          />
         <EventSend
           evalCode={setEvalCode}
         />
