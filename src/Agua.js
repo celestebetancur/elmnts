@@ -13,6 +13,18 @@ const Agua = (props) => {
     aguaDialect(props.text)
   },[props.evalCode])
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      try{
+        aguaDialect(props.text)
+      } catch (err){
+        console.log('Agua(lang) error')
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [props.text]);
+
+
   const aguaDialect = (text) => {
     let upper = text.toUpperCase()
     let newLines = upper.split(/\n/)
@@ -21,10 +33,10 @@ const Agua = (props) => {
     let loopStateOn = ['REPITE','REPITEN','CONSTANTES','CONSTANTE','CONTINUA','CONTINUAS','CONTINUO','CONTINUOS','FLUJOS','FLUYEN','FLUYE','FLUIR','FLUIDO','PERPETUA','ETERNA','ETERNO','PERPETUO','CÍCLICO','CÍCLICA','CÍCLICOS','CÍCLICAS','INCONTABLE','INCONTABLES','INCALCULABLE','INFINITO','INFINITA','INFINITOS','INFINITAS','INTERMINABLE','INTERMINABLES']
     let stopWords = ['PARAN','PARA','DETENTE','FRENA','DETIENEN','DETIENE','PAUSA','PAUSAN','ESTANCA','ESTANCAN','REPRESA','REPRESAN','CONGELA','CONGELAN','CONGELADO','CONGELADA','CONGELADOS']
     let softVal = ['SUAVE','SUAVES','SUAVEMENTE','TRANQUILO','TRANQUILA','CALLADA','CALLADO','TRANQUILOS','TRANQUILAS','CALLADAS','CALLADOS','SILENTES','TENUES','TENUE','REPOSO','REPOSA','REPOSAN']
-    let softerVal = ['MENOS','POCO','POCAS','POCOS','POCA','ESCASO','ESCASA','ESCASEAN','LIMITADO']
+    let softerVal = ['MENOS','POCO','POCAS','POCOS','POCA','ESCASO','ESCASOS','ESCASA','ESCASAS','ESCASEAN','LIMITADO','LIMITADA','LIMITADOS','LIMITADAS']
     let medVal = ['FUERTE','FUERTES','VIOLENTO','VIOLENTA','VIOLENTOS','VIOLENTAS','DUROS','DURAS','AGRESIVA','AGRESIVO','TORMENTOSA','TORMENTOSO','TORMENTOSOS','ROBUSTO','POTENTE','ENÉRGICO','ENÉRGICA']
     let loudVal = ['MUCHO','MUCHAS','MUCHOS','MUCHA','ABUNDANTE','ABUNTANTES','NUMEROSO','NUMEROSA','NUMEROSOS','NUMEROSAS','INMENSO','INMENSA']
-    let fastVal = ['LIGERA','VOLATIL','RÁPIDA','RÁPIDO','LIGERAS','LIGEROS','VOLATILES','RÁPIDAS','RÁPIDOS']
+    let fastVal = ['LIGERA','LIGERO','VOLATIL','RÁPIDA','RÁPIDO','LIGERAS','LIGEROS','VOLATILES','RÁPIDAS','RÁPIDOS']
     let slowVal = ['LENTA','LENTO','LENTOS','LENTAS','CALMADO','CALMADA','CALMADOS','CALMADAS','SOMNOLIENTO','SOMNOLIENTA','SOMNOLIENTAS','SOMNOLIENTOS','DESPACIO','PROFUNDO','PROFUNDA','PROFUNDOS','PROFUNDAS','DORMIDA','DORMIDAS','DORMID0','DORMIDOS']
 
     let st = [0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -54,9 +66,9 @@ const Agua = (props) => {
             sp[index] += fastVal.includes(e) ? 0.5 : 0;
             sp[index] -= slowVal.includes(e) ? 0.2 : 0;
           });
-          // if(stopST[index] === 1){
-          //   lp[index] = 0;
-          // }
+          if(st[index] === 1){
+            lp[index] = 0;
+          }
         }
       }
     }

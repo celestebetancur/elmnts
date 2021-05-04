@@ -37,6 +37,7 @@ const App = () => {
   const [path, setPath] = useState('')
   const [usersTaken, setUsersTaken] = useState([])
   const [box1Lang, setBox1Lang] = useState(true)
+  const [mainCmd, setMainCmd] = useState('')
 
   const db = useDatabase();
 
@@ -196,6 +197,11 @@ const App = () => {
     return () => clearTimeout(timer);
   }, [sharedBuf[3]]);
 
+  const mainCommands = (e) => {
+    e.preventDefault()
+    document.getElementById("mainCmd").value = ''
+  }
+
   const checkCode0 = (e) => {
     setEditorText0(e.target.value)
   }
@@ -353,10 +359,18 @@ const App = () => {
           {activeTA !== 4 &&
             <>
             {status}
-            <input style={{marginLeft:'2rem',backgroundColor:'rgba(255,255,255,0.2)',borderRadius:'4px'}} placeholder="main commands here" type="text"/>
+            <form onSubmit={mainCommands}>
+              <input
+                id="mainCmd"
+                style={{marginLeft:'2rem',backgroundColor:'rgba(255,255,255,0.2)',borderRadius:'4px'}}
+                placeholder="main commands here"
+                type="text"
+                onChange={e => setMainCmd(e.target.value)}
+                />
+              <input type="submit" value="Submit" />
+            </form>
             </>
           }
-
           </Card.Footer>
         </Card>
       </Container>
